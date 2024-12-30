@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factura</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .factura { max-width: 800px; margin: auto; padding: 20px; border: 1px solid #ddd; }
+        h1, h2 { text-align: center; }
+        .datos { margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f4f4f4; }
+    </style>
+</head>
+<body>
+    <div class="factura">
+        <h1>Factura</h1>
+        <h2>Empresa XYZ</h2>
+        <div class="datos">
+            <p><strong>Cliente:</strong> <span id="cliente"></span></p>
+            <p><strong>Fecha:</strong> <span id="fecha"></span></p>
+            <p><strong>Teléfono:</strong> <span id="telefono"></span></p>
+            <p><strong>Método de Pago:</strong> <span id="metodo_pago"></span></p>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unitario</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody id="productos"></tbody>
+        </table>
+        <div class="totales" style="margin-top: 20px;">
+            <p><strong>Subtotal:</strong> $<span id="subtotal"></span></p>
+            <p><strong>Descuento:</strong> $<span id="descuento"></span></p>
+            <p><strong>Total:</strong> $<span id="total"></span></p>
+        </div>
+    </div>
+
+    <script>
+        // Función para obtener los parámetros de la URL
+        function getParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                cliente: params.get('cliente'),
+                fecha: params.get('fecha'),
+                telefono: params.get('telefono'),
+                metodo_pago: params.get('metodo_pago'),
+                subtotal: params.get('subtotal'),
+                descuento: params.get('descuento'),
+                total: params.get('total'),
+                cantidades: params.get('cantidades')?.split(',') || [],
+                productos: params.get('productos')?.split(',') || [],
+                precios: params.get('precios')?.split(',') || [],
+                subtotales: params.get('subtotales')?.split(',') || []
+            };
+        }
+
+        // Función para llenar los datos en la factura
+        function llenarFactura() {
+            const params = getParams();
+
+            // Llenar datos generales
+            document.getElementById('cliente').textContent = params.cliente || '';
+            document.getElementById('fecha').textContent = params.fecha || '';
+            document.getElementById('telefono').textContent = params.telefono || '';
+            document.getElementById('metodo_pago').textContent = params.metodo_pago || '';
+            document.getElementById('subtotal').textContent = params.subtotal || '0.00';
+            document.getElementById('descuento').textContent = params.descuento || '0.00';
+            document.getElementById('total').textContent = params.total || '0.00';
+
+            // Llenar productos
+            const productosBody = document.getElementById('productos');
+            params.productos.forEach((producto, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${producto}</td>
+                    <td>${params.cantidades[index]}</td>
+                    <td>$${params.precios[index]}</td>
+                    <td>$${params.subtotales[index]}</td>
+                `;
+                productosBody.appendChild(row);
+            });
+        }
+
+        // Llenar la factura al cargar la página
+        llenarFactura();
+    </script>
+</body>
+</html>
